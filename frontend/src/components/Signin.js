@@ -3,28 +3,11 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from "axios";
 function Signin(){
-            const { register, handleSubmit, formState: { errors } } = useForm();
-            const [loading, setLoading] = useState(false);  
-            const [errorMessage, setErrorMessage] = useState('email');  
-            const [successMessage, setSuccessMessage] = useState(''); 
-            const apiUrl = process.env.REACT_APP_API_URL;
-            const onSubmit = async (data) => {
-                setLoading(true);  
-                setErrorMessage(''); 
-                setSuccessMessage('')
-
-                try {
-                  // Make an API request with form data
-                  const response = await axios.post(`${apiUrl}/login`, data);
-                  console.log(response.data);
-                  setSuccessMessage('Login successful!');
-                    } 
-                catch (error) {
-                  console.error('There was an error!', error);
-                  setErrorMessage('Login failed. Please check your credentials and try again.'); 
-                 }
-               };    
-               console.log(errors, 'Validation Errors');        
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const onSubmit = (data) => {
+    };    
+        console.log(errors, 'Validation Errors');        
     return(
         <Fragment>
            <section className ="signin form-section">
@@ -79,7 +62,7 @@ function Signin(){
                             <Link to ="#" title="Forgot Password" className ="a-link">Forgot Password?</Link>
                         </div>
                         <div className ="col-12"> 
-                            <button type="submit" className ="default-btn w-100" disabled={loading}>Login</button>
+                            <button type="submit" className ="default-btn w-100">Login</button>
                         </div>
                     </form>
                 </div>
