@@ -1,12 +1,30 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import axios from "axios";
 function Signin(){
             const { register, handleSubmit, formState: { errors } } = useForm();
-            const onSubmit = (data) => {
-            console.log(data);
-            }
-            console.log(errors,'hgfds')
+            const [loading, setLoading] = useState(false);  
+            const [errorMessage, setErrorMessage] = useState('email');  
+            const [successMessage, setSuccessMessage] = useState(''); 
+            const apiUrl = process.env.REACT_APP_API_URL;
+            const onSubmit = async (data) => {
+                setLoading(true);  
+                setErrorMessage(''); 
+                setSuccessMessage('')
+
+                try {
+                  // Make an API request with form data
+                  const response = await axios.post(`${apiUrl}/login`, data);
+                  console.log(response.data);
+                  setSuccessMessage('Login successful!');
+                    } 
+                catch (error) {
+                  console.error('There was an error!', error);
+                  setErrorMessage('Login failed. Please check your credentials and try again.'); 
+                 }
+               };    
+               console.log(errors, 'Validation Errors');        
     return(
         <Fragment>
            <section className ="signin form-section">
@@ -23,7 +41,7 @@ function Signin(){
                     <p className ="pb50">Don't have an account <Link to  ="#" title="Register Now" className ="a-link">Register Now!</Link></p>
                     <form className ="form w-100" onSubmit={handleSubmit(onSubmit)}>
                         <div className ="input-group mb-3 mb-lg-4 pb-1">
-                            <label for="sign-email-id" className ="form-label">Email ID</label>
+                            <label htmlFor="sign-email-id" className ="form-label">Email ID</label>
                             <input type="email" className ="w-100" id="sign-email-id" placeholder="Email Address" aria-label="Email Address"
                              {...register('email', {
                                 required: 'This field is required',
@@ -35,7 +53,7 @@ function Signin(){
                                   {errors.email && <p className="text-danger">{errors.email.message}</p>}
                         </div>
                         <div className ="input-group mb-3 mb-lg-4 pb-2">
-                            <label for="sign-password" className ="form-label">Password</label>
+                            <label htmlFor="sign-password" className ="form-label">Password</label>
                             <input type="password" className ="w-100" id="sign-password" placeholder="Password" aria-label="Password"
                               {...register('password', {
                                 required: 'Password is required',
@@ -61,7 +79,7 @@ function Signin(){
                             <Link to ="#" title="Forgot Password" className ="a-link">Forgot Password?</Link>
                         </div>
                         <div className ="col-12"> 
-                            <button type="submit" className ="default-btn w-100">Login</button>
+                            <button type="submit" className ="default-btn w-100" disabled={loading}>Login</button>
                         </div>
                     </form>
                 </div>

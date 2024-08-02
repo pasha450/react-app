@@ -1,13 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from 'react-hook-form';
+import axios from "axios";
 
 function Signup(){
-            const { register, handleSubmit, formState: { errors } } = useForm();
-            const onSubmit = (data) => {
-            console.log(data);
-            }
-            console.log(errors,'hgfds')
+    let apiUrl = process.env.REACT_APP_API_URL;
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const[loading,setLoading] =useState(false);
+    const [errorMessage, setErrorMessage] = useState('');  
+    const [successMessage, setSuccessMessage] = useState(''); 
+    //--------------------------
+    const [email, setEmail] = useState(''); 
+    const [name, setName] = useState(''); 
+
+    const onSubmit =  async (data) => {
+        setLoading(true);
+        setErrorMessage('')
+        setSuccessMessage('')
+       try{
+             const response =await axios.post(`${apiUrl}/register`, data);
+             console.log(response.data);
+             setSuccessMessage('Login successfully');
+       }
+       catch{
+
+       }
+    }
+    console.log(errors,'hgfds',name)
     return(
     <section className="signin form-section">
         <div className="container-fluid">
@@ -23,7 +42,7 @@ function Signup(){
                         <form className="form w-100" onSubmit={handleSubmit(onSubmit)}>
                             <div classname="input-group mb-3 mb-lg-4 pb-1">
                                 <label for="sign-email-id" className="form-label">Name</label>
-                                <input type="text" name="name" className="w-100"  id="sign-name" placeholder="Name"  aria-label="Name"
+                                <input type="text" value={name} name="name" className="w-100"  id="sign-name" placeholder="Name"  aria-label="Name"
                                 {...register("name", {
                                     required: 'Name is required',
                                     maxLength: {
@@ -33,20 +52,28 @@ function Signup(){
                                     pattern: {
                                       value: /^[A-Za-z]+$/, // Regex to match only letters
                                       message: 'Name must contain only letters'
-                                    }
+                                    },
                                   })}
+                                  onChange = {(e)=>{setName(e.target.value)}}
                                   />
                                 {errors.name && <p className="text-danger">{errors.name.message}</p>}
                             </div>
                             <div className="input-group mb-3 mb-lg-4 pb-1">
                                 <label for="sign-email-id" className="form-label">Email ID</label>
-                                <input type="email" className="w-100" id="sign-email-id" placeholder="Email Address" aria-label="Email Address"  {...register('email', {
-                               required: 'This field is required',
-                               pattern: {
-                               value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                               message: 'Please enter a valid email address'
-                             }
-                                })}/>
+                                <input type="email" value={email} className="w-100" id="sign-email-id" placeholder="Email Address" aria-label="Email Address" {...register("email", {
+                                    required: "Email address is required",
+                                    validate: {
+                                      maxLength: (v) =>
+                                        v.length <= 50 ||
+                                        "The Email address should have at most 50 characters",
+                                      matchPattern: (v) =>
+                                        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
+                                          v
+                                        ) ||
+                                        "Email address must be a valid address",
+                                    },
+                                  })}
+                                />
                                  {errors.email && <p className="text-danger">{errors.email.message}</p>}
                             </div>
                             <div className="input-group mb-3 mb-lg-4 pb-1">
