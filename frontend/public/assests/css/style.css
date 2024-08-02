@@ -104,10 +104,13 @@ a{
 }
 p{
     color:var(--black-color);
+    /* color: red; */
     font-size:var(--bodyfont);
     line-height:30px;
     margin:var(--margin0);
 }
+
+
 ul,ol{
     padding:var(--padding0);
     margin:var(--margin0);

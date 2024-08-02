@@ -2,10 +2,10 @@ import logo from './logo.svg';
 import './App.css';
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
-import SignIn from './pages/SignIn';
+import Login from './pages/Login';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Users from './pages/Users';
-import Signup from './pages/Signup';
+import Register from './pages/Register';
 
 
 
@@ -16,8 +16,8 @@ export default function App() {
     <Route path="/" element={<Dashboard/>}/>
     <Route path="/profile" element={<Profile/>}/>
     <Route path="/users" element={<Users/>}/>
-    <Route path='/signin' element={<SignIn/>}></Route>
-    <Route path='/signup' element={<Signup/>}></Route>
+    <Route path='/login' element={<Login/>}></Route>
+    <Route path='/register' element={<Register/>}></Route>
     </Routes>
     </BrowserRouter> 
    );
