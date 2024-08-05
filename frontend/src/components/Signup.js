@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import axios from "axios";
 import { ToastContainer,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'js-cookie'; 
 
 function Signup(){
+    const navigate = useNavigate();
     const { register ,setValue,setError,handleSubmit, formState: { errors } } = useForm();
     const [formValues, setFormValues] = useState({
       name: '',
@@ -24,18 +26,21 @@ function Signup(){
       const response = await axios.post(`${apiUrl}/register`, formValues);
       console.log('Signup successful:', response);
       toast.success('Registration successful!');
+      Cookies.set('authToken', { expires: 2}); 
+      setTimeout(() => {
+        navigate('/login');
+      }, 800);
     }
     catch (error) {
         console.error('Signup error:', error);
         if (error.response && error.response.data.errors) {
-          console.log(error.response,'gggggggggg')
             error.response.data.errors.forEach(err => {
-              setError(err.field, { type: 'server', message: err.message });
+              setError(err.path, { type: 'server', message: err.msg });
           });
       } 
       else if (error.response && error.response.data.error) {
-        console.log('object',error.response.data.error)
-        toast.error('Registration failed. Please try again.');
+        toast.error(error.response.data.error);
+
       }
       else {
         toast.error('An unexpected error occurred. Please try again.');
@@ -54,7 +59,8 @@ function Signup(){
                             <img src="/assests/images/logo.png" alt="logo"/></Link>
                             </div>
                   <h2 className="titleone pb10 w-100">Sign Up</h2>
-                  <p className="pb50">Already have an account <Link to="/Register Now" className="a-link">Login Now!</Link></p>
+                  <p className="pb50">Already have an account 
+                  <Link to="/login" className="a-link">Login Now!</Link></p>
                   <form className="form w-100" onSubmit={handleSubmit(onSubmit)}>
                   <div className="input-group mb-3 mb-lg-4 pb-1">
                     <label htmlFor="sign-name" className="form-label">Name</label>
@@ -136,17 +142,7 @@ function Signup(){
                   placeholder="Password"
                   aria-label="Password"
                   value={formValues.password}
-                  {...register('password', {
-                    required: 'Password is required',
-                    minLength: {
-                      value: 8,
-                      message: 'Password must be at least 8 characters long'
-                    },
-                    pattern: {
-                      value: /[!@#$%^&*(),.?":{}|<>]/,
-                      message: 'Password must contain at least one special character'
-                    }
-                  })}
+                 
                   onChange={(e) => handleInputChange('password', e.target.value)}
                 />
                 {errors.password && <p className="text-danger">{errors.password.message}</p>}
@@ -161,11 +157,7 @@ function Signup(){
                 placeholder="Confirm Password"
                 aria-label="Confirm Password"
                 value={formValues.confirmPassword}
-                {...register('confirmPassword', {
-                  required: 'Confirm Password is required',
-                  validate: value =>
-                    value === formValues.password || 'Passwords must match'
-                })}
+                
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
               />
               {errors.confirmPassword && <p className="text-danger">{errors.confirmPassword.message}</p>}

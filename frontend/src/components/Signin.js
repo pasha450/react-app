@@ -1,18 +1,39 @@
 import React, {useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import axios from "axios";
 import { ToastContainer,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Cookies from 'js-cookie'; 
 function Signin(){
-    const { register,handleSubmit,setError, formState: { errors } } = useForm();
+    const navigate = useNavigate();
+    const { register,handleSubmit,setError,setValue, formState: { errors } } = useForm();
+    const [rememberMe, setRememberMe] = useState(false)
+      useEffect(()=>{
+         const savedEmail =localStorage.getItem('savedEmail')
+         const savedPassword = localStorage.getItem('savedPassword')
+          if (savedEmail && savedPassword) {
+                setValue('email', savedEmail);
+                setValue('password', savedPassword);
+                setRememberMe(true); 
+            }  
+        },   [setValue]);
+    const handleRememberMeChange = (e) => { setRememberMe(e.target.checked); };
     const onSubmit = async (data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
         try {
           const response = await axios.post(`${apiUrl}/login`, data);
           console.log('Login successful:', response);
           toast.success('Login successfully!'); 
+          Cookies.set('authToken', { expires: 2}); 
+          if (rememberMe) { 
+                localStorage.setItem('savedEmail', data.email);
+                localStorage.setItem('savedPassword', data.password);
+          }
+          setTimeout(() => {
+              navigate('/')
+          }, 800);
+    
         } catch (error) {
             console.log(error,'pashaaa')
         if (error.response && error.response.data.errors) {
@@ -41,7 +62,7 @@ function Signin(){
                         </Link>
                     </div> 
                     <h2 className ="titleone pb10 w-100">Sign In</h2>
-                    <p className ="pb50">Don't have an account <Link to  ="#" title="Login Now" className ="a-link">Login Now!</Link></p>
+                    <p className ="pb50">Don't have an account <Link to  ="#" title="Register Now" className ="a-link">Register Now!</Link></p>
                     <form className ="form w-100" onSubmit={handleSubmit(onSubmit)}>
                         <div className ="input-group mb-3 mb-lg-4 pb-1">
                             <label htmlFor="sign-email-id" className ="form-label">Email ID</label>
@@ -68,8 +89,11 @@ function Signin(){
                         </div>
                         <div className ="mb-4 pb-2 w-50 float-start">
                             <label className ="custom-check">
-                                <input type="checkbox" name=""/>
-                                <span>Remember me</span>
+                            <input 
+                            type="checkbox" 
+                            checked={rememberMe} 
+                            onChange={handleRememberMeChange}
+                             />
                             </label>
                         </div>
                         <div className ="mb-4 pb-2 text-end forgot-password w-50 float-start">
