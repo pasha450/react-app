@@ -1,18 +1,38 @@
-import React, { Fragment, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from "axios";
+import { ToastContainer,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function Signin(){
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register,handleSubmit,setError, formState: { errors } } = useForm();
+    const onSubmit = async (data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
-    const onSubmit = (data) => {
-    };    
-        console.log(errors, 'Validation Errors');        
+        try {
+          const response = await axios.post(`${apiUrl}/login`, data);
+          console.log('Login successful:', response);
+          toast.success('Login successfully!'); 
+        } catch (error) {
+            console.log(error,'pashaaa')
+        if (error.response && error.response.data.errors) {
+            error.response.data.errors.forEach(err => {
+            setError(err.field, { type: 'server', message: err.message });
+                });
+        } else if(error.response && error.response.data.error){
+            console.log('object',error.response.data.error)
+            setError('invalidCredential', { type: 'server', message: error.response.data.error } )
+        }else{
+            toast.error('Login failed. Please try again.');
+
+        }
+        }
+      };
+      console.log(errors,'error')
     return(
-        <Fragment>
-           <section className ="signin form-section">
-    <div className ="container-fluid">
-        <div className ="row">
+    <section className ="signin form-section">
+     <div className ="container-fluid">
+         <div className ="row">
             <div className ="col-md-12 col-lg-6">
                 <div className ="sign-content form-fields py-5">
                     <div className ="form-logo">
@@ -21,7 +41,7 @@ function Signin(){
                         </Link>
                     </div> 
                     <h2 className ="titleone pb10 w-100">Sign In</h2>
-                    <p className ="pb50">Don't have an account <Link to  ="#" title="Register Now" className ="a-link">Register Now!</Link></p>
+                    <p className ="pb50">Don't have an account <Link to  ="#" title="Login Now" className ="a-link">Login Now!</Link></p>
                     <form className ="form w-100" onSubmit={handleSubmit(onSubmit)}>
                         <div className ="input-group mb-3 mb-lg-4 pb-1">
                             <label htmlFor="sign-email-id" className ="form-label">Email ID</label>
@@ -32,25 +52,19 @@ function Signin(){
                                 value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                 message: 'Please enter a valid email address'
                               }
-                                 })}/>
+                                 })}
+                                 />
                                   {errors.email && <p className="text-danger">{errors.email.message}</p>}
                         </div>
                         <div className ="input-group mb-3 mb-lg-4 pb-2">
                             <label htmlFor="sign-password" className ="form-label">Password</label>
                             <input type="password" className ="w-100" id="sign-password" placeholder="Password" aria-label="Password"
-                              {...register('password', {
+                              {...register('password', { 
                                 required: 'Password is required',
-                                minLength: {
-                                  value: 8,
-                                  message: 'Password must be at least 8 characters long'
-                                },
-                                pattern: {
-                                  value: /[!@#$%^&*(),.?":{}|<>]/, // Regex for special characters
-                                  message: 'Password must contain at least one special character'
-                                }
                               })}
                             />
                             {errors.password && <p className="text-danger">{errors.password.message}</p>}
+                            {errors.invalidCredential && <p className="text-danger">{errors.invalidCredential.message}</p>}
                         </div>
                         <div className ="mb-4 pb-2 w-50 float-start">
                             <label className ="custom-check">
@@ -72,11 +86,10 @@ function Signin(){
                     <img src="assests/images/sign-in.png" alt="Pailogs SignIn" className ="img-fluid"/>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
- 
-    </Fragment>
+         </div>
+     </div>
+    <ToastContainer />
+    </section>
     )
 }
  export default Signin;

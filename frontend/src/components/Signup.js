@@ -6,18 +6,14 @@ import { ToastContainer,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Signup(){
-    const { register, watch ,setValue,setError,handleSubmit, formState: { errors } } = useForm();
-    const [email, setEmail] = useState(); 
-    const [name, setName] = useState(''); 
-    const [phone, setPhone] = useState(''); 
-    const [password, setPassword] = useState(''); 
+    const { register ,setValue,setError,handleSubmit, formState: { errors } } = useForm();
     const [formValues, setFormValues] = useState({
       name: '',
       email: '',
       phone: '',
       password: '',
-      confirmPassword: ''
-    }); 
+      confirmPassword: '' 
+  });   
     const handleInputChange = (field, value) => {
       setFormValues({ ...formValues, [field]: value });
       setValue(field, value, { shouldValidate: true });
@@ -31,11 +27,22 @@ function Signup(){
     }
     catch (error) {
         console.error('Signup error:', error);
+        if (error.response && error.response.data.errors) {
+          console.log(error.response,'gggggggggg')
+            error.response.data.errors.forEach(err => {
+              setError(err.field, { type: 'server', message: err.message });
+          });
+      } 
+      else if (error.response && error.response.data.error) {
+        console.log('object',error.response.data.error)
         toast.error('Registration failed. Please try again.');
-    }
+      }
+      else {
+        toast.error('An unexpected error occurred. Please try again.');
+        } 
+      }
     };
-      console.log(errors,'hgfds',name)
-      const notify = () => toast("Well done!");
+    console.log(errors,'errors')
       return(
       <section className="signin form-section">
           <div className="container-fluid">
@@ -61,13 +68,11 @@ function Signup(){
                       value={formValues.name}
                       {...register("name", {
                         required: 'Name is required',
-                        maxLength: {
-                          value: 10,
-                          message: 'Name cannot exceed 10 characters'
-                        },
-                        pattern: {
-                          value: /^[A-Za-z]+$/,
-                          message: 'Name must contain only letters'
+                        validate: {
+                          maxLength: v =>
+                            v.length <= 20 || "The  Name should have at most 20 characters",
+                          matchPattern: v =>
+                            /^[A-Za-z\s]+$/.test(v) || "Name must be a valid address"
                         }
                       })}
                       onChange={(e) => handleInputChange('name', e.target.value)}
@@ -158,7 +163,8 @@ function Signup(){
                 value={formValues.confirmPassword}
                 {...register('confirmPassword', {
                   required: 'Confirm Password is required',
-                  validate: value => value === watch('password') || 'Passwords and confirm password must be same'
+                  validate: value =>
+                    value === formValues.password || 'Passwords must match'
                 })}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
               />
