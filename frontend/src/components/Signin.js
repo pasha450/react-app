@@ -6,35 +6,48 @@ import { ToastContainer,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie'; 
 function Signin(){
+    
     const navigate = useNavigate();
     const { register,handleSubmit,setError,setValue, formState: { errors } } = useForm();
-    const [rememberMe, setRememberMe] = useState(false)
+    // const [rememberMe, setRememberMe] = useState(false)
       useEffect(()=>{
-         const savedEmail =localStorage.getItem('savedEmail')
+        const token = Cookies.get('authToken');
+       if (token) {
+         navigate('/'); 
+        }   
+        const savedEmail =localStorage.getItem('savedEmail')
          const savedPassword = localStorage.getItem('savedPassword')
           if (savedEmail && savedPassword) {
                 setValue('email', savedEmail);
                 setValue('password', savedPassword);
-                setRememberMe(true); 
-            }  
-        },   [setValue]);
-    const handleRememberMeChange = (e) => { setRememberMe(e.target.checked); };
+                // setRememberMe(true); 
+            } 
+        },   [navigate,setValue]);
+    // const handleRememberMeChange = (e) => { setRememberMe(e.target.checked); };
+
     const onSubmit = async (data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
+
         try {
           const response = await axios.post(`${apiUrl}/login`, data);
           console.log('Login successful:', response);
           toast.success('Login successfully!'); 
-          Cookies.set('authToken', { expires: 2}); 
-          if (rememberMe) { 
+          const { token } = response.data;
+          Cookies.set('authToken', token, { expires: 1 });
+        //   if (token) {
+             if (token) { 
                 localStorage.setItem('savedEmail', data.email);
                 localStorage.setItem('savedPassword', data.password);
           }
+          else {
+            localStorage.removeItem('savedEmail');
+            localStorage.removeItem('savedPassword');
+        }
           setTimeout(() => {
               navigate('/')
           }, 800);
-    
-        } catch (error) {
+        // }
+         } catch (error) {
             console.log(error,'pashaaa')
         if (error.response && error.response.data.errors) {
             error.response.data.errors.forEach(err => {
@@ -47,9 +60,10 @@ function Signin(){
             toast.error('Login failed. Please try again.');
 
         }
-        }
+     }
       };
-      console.log(errors,'error')
+    
+
     return(
     <section className ="signin form-section">
      <div className ="container-fluid">
@@ -62,7 +76,7 @@ function Signin(){
                         </Link>
                     </div> 
                     <h2 className ="titleone pb10 w-100">Sign In</h2>
-                    <p className ="pb50">Don't have an account <Link to  ="#" title="Register Now" className ="a-link">Register Now!</Link></p>
+                    <p className ="pb50">Don't have an account <Link to  ="/register" title="Register Now" className ="a-link">Register Now!</Link></p>
                     <form className ="form w-100" onSubmit={handleSubmit(onSubmit)}>
                         <div className ="input-group mb-3 mb-lg-4 pb-1">
                             <label htmlFor="sign-email-id" className ="form-label">Email ID</label>
@@ -88,13 +102,11 @@ function Signin(){
                             {errors.invalidCredential && <p className="text-danger">{errors.invalidCredential.message}</p>}
                         </div>
                         <div className ="mb-4 pb-2 w-50 float-start">
-                            <label className ="custom-check">
-                            <input 
-                            type="checkbox" 
-                            checked={rememberMe} 
-                            onChange={handleRememberMeChange}
-                             />
-                            </label>
+                        <label class="custom-check">
+                                <input type="checkbox" name=""/>
+                                <span>Remember me</span>
+                               </label>
+
                         </div>
                         <div className ="mb-4 pb-2 text-end forgot-password w-50 float-start">
                             <Link to ="#" title="Forgot Password" className ="a-link">Forgot Password?</Link>

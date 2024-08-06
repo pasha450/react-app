@@ -15,23 +15,42 @@ function Signup(){
       phone: '',
       password: '',
       confirmPassword: '' 
-  });   
-    const handleInputChange = (field, value) => {
+  }); 
+    useEffect(()=>{
+      const token = Cookies.get('authToken');
+      if (token) {
+        navigate('/'); 
+      }   
+        const savedEmail =localStorage.getItem('savedEmail')
+        const savedPassword = localStorage.getItem('savedPassword')
+        const savedName =localStorage.getItem('savedName')
+        const savedPhone = localStorage.getItem('savedPhone')
+        if (savedEmail && savedPassword &&savedName && savedPhone) {
+              setValue('email', savedEmail);
+              setValue('password', savedPassword);
+              setValue('name', savedName);
+              setValue('Phone', savedPhone);
+                
+          } 
+            },   [navigate,setValue]);
+
+      const handleInputChange = (field, value) => {
       setFormValues({ ...formValues, [field]: value });
       setValue(field, value, { shouldValidate: true });
     };
+    
     const onSubmit = async (data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
     try {
       const response = await axios.post(`${apiUrl}/register`, formValues);
       console.log('Signup successful:', response);
       toast.success('Registration successful!');
-      Cookies.set('authToken', { expires: 2}); 
+
       setTimeout(() => {
         navigate('/login');
       }, 800);
-    }
-    catch (error) {
+ 
+      }catch (error) {
         console.error('Signup error:', error);
         if (error.response && error.response.data.errors) {
             error.response.data.errors.forEach(err => {
