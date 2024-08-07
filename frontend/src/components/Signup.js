@@ -161,7 +161,10 @@ function Signup(){
                   placeholder="Password"
                   aria-label="Password"
                   value={formValues.password}
-                 
+                  {...register('password', {
+                    required: 'Password must be required',
+                   
+                  })}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                 />
                 {errors.password && <p className="text-danger">{errors.password.message}</p>}
@@ -176,7 +179,10 @@ function Signup(){
                 placeholder="Confirm Password"
                 aria-label="Confirm Password"
                 value={formValues.confirmPassword}
-                
+                {...register('confirmPassword', {
+                  required: 'ConfirmPassword is required',
+                 
+                })}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
               />
               {errors.confirmPassword && <p className="text-danger">{errors.confirmPassword.message}</p>}
