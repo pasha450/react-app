@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 function Signin(){
     
     const navigate = useNavigate();
+    const [isPaswordVisiable , setIsPasswordVisiable] = useState(false);
     const { register,handleSubmit,setError,setValue, formState: { errors } } = useForm();
     // const [rememberMe, setRememberMe] = useState(false)
       useEffect(()=>{
@@ -91,14 +92,18 @@ function Signin(){
                                  />
                                   {errors.email && <p className="text-danger">{errors.email.message}</p>}
                         </div>
-                        <div className ="input-group mb-3 mb-lg-4 pb-2">
+                        <div className ="input-group mb-3 mb-lg-4 pb-2 view-icon">
                             <label htmlFor="sign-password" className ="form-label">Password</label>
-                            <input type="password" className ="w-100" id="sign-password" placeholder="Password" aria-label="Password"
+                            <input 
+                             type= {isPaswordVisiable ? "text " :"password" }
+                            className ="w-100" id="sign-password" placeholder="Password" aria-label="Password"
                               {...register('password', { 
                                 required: 'Password is required',
                               })}
                             />
-                            {errors.password && <p className="text-danger">{errors.password.message}</p>}
+                            <img src={isPaswordVisiable ? "/assests/images/eye.svg" : "/assests/images/eye-off.svg"} alt="Pailogs SignIn" className="img-fluid" onClick={()=>setIsPasswordVisiable(!isPaswordVisiable)}
+                            />
+                             {errors.password && <p className="text-danger">{errors.password.message}</p>}
                             {errors.invalidCredential && <p className="text-danger">{errors.invalidCredential.message}</p>}
                         </div>
                         <div className ="mb-4 pb-2 w-50 float-start">

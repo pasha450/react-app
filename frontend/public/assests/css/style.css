@@ -1074,4 +1074,13 @@ form .form-label{
     }
 }
 
+.view-icon {
+    position: relative;
+}
+.view-icon img{
+    position: absolute;
+    right: 22px;
+    bottom: 28px;
+}
+
 

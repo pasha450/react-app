@@ -7,7 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie'; 
 
 function Signup(){
+    
     const navigate = useNavigate();
+    const [isPaswordVisiable , setIsPasswordVisiable] = useState(false);
+    const [ConfirmPaswordVisiable , setConfirmPasswordVisiable] = useState(false);
     const { register ,setValue,setError,handleSubmit, formState: { errors } } = useForm();
     const [formValues, setFormValues] = useState({
       name: '',
@@ -67,6 +70,7 @@ function Signup(){
       }
     };
     console.log(errors,'errors')
+     
       return(
       <section className="signin form-section">
           <div className="container-fluid">
@@ -150,11 +154,10 @@ function Signup(){
                   />
                   {errors.phone && <p className="text-danger">{errors.phone.message}</p>}
                 </div>
-
-              <div className="input-group mb-3 mb-lg-4 pb-2">
+               <div className="input-group mb-3 mb-lg-4 pb-2 view-icon">
                 <label htmlFor="sign-password" className="form-label">Password</label>
                 <input
-                  type="password"
+                type= {isPaswordVisiable ? "text " :"password" }
                   name="password"
                   className="w-100"
                   id="sign-password"
@@ -167,13 +170,15 @@ function Signup(){
                   })}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                 />
+                <img src={isPaswordVisiable ? "/assests/images/eye.svg" : "/assests/images/eye-off.svg"} alt="Pailogs SignIn" className="img-fluid" onClick={()=>setIsPasswordVisiable(!isPaswordVisiable)}/>
+
                 {errors.password && <p className="text-danger">{errors.password.message}</p>}
               </div>
 
-            <div className="input-group mb-3 mb-lg-4 pb-2">
+            <div className="input-group mb-3 mb-lg-4 pb-2 view-icon">
               <label htmlFor="sign-confirm-password" className="form-label">Confirm Password</label>
               <input
-                type="password"
+                type={ConfirmPaswordVisiable ? "text" :"password"}
                 className="w-100"
                 id="sign-confirm-password"
                 placeholder="Confirm Password"
@@ -185,6 +190,7 @@ function Signup(){
                 })}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
               />
+              <img src={ConfirmPaswordVisiable ? "/assests/images/eye.svg" : "/assests/images/eye-off.svg"} alt="Pailogs SignIn" className="img-fluid" onClick={()=>setConfirmPasswordVisiable(!ConfirmPaswordVisiable)}/>
               {errors.confirmPassword && <p className="text-danger">{errors.confirmPassword.message}</p>}
             </div>
 
