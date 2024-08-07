@@ -8,9 +8,6 @@ import Users from './pages/Users';
 import Register from './pages/Register';
 import PrivateRoute from './pages/PrivateRoute';
 
-
-
-
 export default function App() {
   return ( 
     <BrowserRouter>
@@ -18,8 +15,8 @@ export default function App() {
     <Route path="/" element={<PrivateRoute Component={Dashboard} />} />
         <Route
             path="/login"
-            element={<Login/>}
-          />
+            element={<Login/>} />
+            
     <Route path="/profile" element={<Profile/>}/>
     <Route path="/users" element={<Users/>}/>
     <Route path='/login' element={<Login/>}></Route>
