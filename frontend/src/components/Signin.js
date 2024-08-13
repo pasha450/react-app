@@ -9,45 +9,59 @@ function Signin(){
     
     const navigate = useNavigate();
     const [isPaswordVisiable , setIsPasswordVisiable] = useState(false);
-    const { register,handleSubmit,setError,setValue, formState: { errors } } = useForm();
-    // const [rememberMe, setRememberMe] = useState(false)
+    const [user,setUser]=useState(null);
+    // ----------
+    const [rememberMe, setRememberMe] = useState(null);
+    const [isCheckedrememberMe, setIsCheckedrememberMe] = useState(false);
+
+    const { register,handleSubmit,setError,formState: { errors } } = useForm();
       useEffect(()=>{
+    
         const token = Cookies.get('authToken');
        if (token) {
          navigate('/'); 
         }   
-        const savedEmail =localStorage.getItem('savedEmail')
-         const savedPassword = localStorage.getItem('savedPassword')
-          if (savedEmail && savedPassword) {
-                setValue('email', savedEmail);
-                setValue('password', savedPassword);
-                // setRememberMe(true); 
-            } 
-        },   [navigate,setValue]);
-    // const handleRememberMeChange = (e) => { setRememberMe(e.target.checked); };
-
+        const rememberMes = localStorage.getItem('rememberMe');
+        setRememberMe(JSON.parse(rememberMes))
+        console.log(rememberMes,"rememberMe2");
+        if(rememberMes !==''){
+            setIsCheckedrememberMe(false);
+        }
+        },[navigate]);
+   
+     
     const onSubmit = async (data) => {
     const apiUrl = process.env.REACT_APP_API_URL;
-
+       
         try {
           const response = await axios.post(`${apiUrl}/login`, data);
           console.log('Login successful:', response);
           toast.success('Login successfully!'); 
-          const { token } = response.data;
+
+          const { token } = response.data;  
+          const loggedUserData = response.data.user;
+          console.log('response',loggedUserData);
           Cookies.set('authToken', token, { expires: 1 });
-        //   if (token) {
-             if (token) { 
-                localStorage.setItem('savedEmail', data.email);
-                localStorage.setItem('savedPassword', data.password);
-          }
-          else {
-            localStorage.removeItem('savedEmail');
-            localStorage.removeItem('savedPassword');
+          const {_id, name, profile_image} = loggedUserData;
+          const storeData = {userId:_id , name:name, profile_image:profile_image};
+          localStorage.setItem('storeData', JSON.stringify(storeData));
+          console.log('setUser',storeData);
+         
+        if (token) { 
+            let rememberMe = {username:data.email,password:data.password};
+            localStorage.setItem('rememberMe', JSON.stringify(rememberMe));
+        }else {
+            localStorage.removeItem('rememberMe');
         }
           setTimeout(() => {
               navigate('/')
-          }, 800);
-        // }
+           }, 800);
+    //    ----set value in localStorage--------
+    
+          
+              
+
+
          } catch (error) {
             console.log(error,'pashaaa')
         if (error.response && error.response.data.errors) {
@@ -59,12 +73,20 @@ function Signin(){
             setError('invalidCredential', { type: 'server', message: error.response.data.error } )
         }else{
             toast.error('Login failed. Please try again.');
-
         }
-     }
-      };
+          console.log('Login failed:'.error);
+          toast.error('Login failed!');
+          localStorage.removeItem('storeData');
+          setUser(null);
+         }
+        
+    };  
+        const handleRememberMeChange = (e) => {
+        const isChecked = e.target.checked;
+        setIsCheckedrememberMe(isChecked)
+    };
     
-
+console.log(rememberMe,'rememberMe',isCheckedrememberMe)
     return(
     <section className ="signin form-section">
      <div className ="container-fluid">
@@ -77,7 +99,7 @@ function Signin(){
                         </Link>
                     </div> 
                     <h2 className ="titleone pb10 w-100">Sign In</h2>
-                    <p className ="pb50">Don't have an account <Link to  ="/register" title="Register Now" className ="a-link">Register Now!</Link></p>
+                    <p className ="pb50">Don't have an account <Link to  ="/register" title="Register   Now" className ="a-link">Register Now!</Link></p>
                     <form className ="form w-100" onSubmit={handleSubmit(onSubmit)}>
                         <div className ="input-group mb-3 mb-lg-4 pb-1">
                             <label htmlFor="sign-email-id" className ="form-label">Email ID</label>
@@ -89,6 +111,7 @@ function Signin(){
                                 message: 'Please enter a valid email address'
                               }
                                  })}
+                                 defaultValue={rememberMe !== null ? rememberMe.username:''}
                                  />
                                   {errors.email && <p className="text-danger">{errors.email.message}</p>}
                         </div>
@@ -100,24 +123,29 @@ function Signin(){
                               {...register('password', { 
                                 required: 'Password is required',
                               })}
-                            />
-                            <img src={isPaswordVisiable ? "/assests/images/eye.svg" : "/assests/images/eye-off.svg"} alt="Pailogs SignIn" className="img-fluid" onClick={()=>setIsPasswordVisiable(!isPaswordVisiable)}
-                            />
+                              defaultValue={rememberMe !== null ? rememberMe.password:''}
+                              />
+                            <img src={isPaswordVisiable ? "/assests/images/eye.svg" : "/assests/images/eye-off.svg"} alt="Pailogs SignIn" className="img-fluid" onClick={()=>setIsPasswordVisiable(!isPaswordVisiable)}/>
                              {errors.password && <p className="text-danger">{errors.password.message}</p>}
                             {errors.invalidCredential && <p className="text-danger">{errors.invalidCredential.message}</p>}
                         </div>
                         <div className ="mb-4 pb-2 w-50 float-start">
-                        <label class="custom-check">
-                                <input type="checkbox" name=""/>
-                                <span>Remember me</span>
-                               </label>
+                          <input 
+                                 type="checkbox"
+                                 className="form-check-input"
+                                 id="remember-me"
+                                 onChange={handleRememberMeChange}
+                                 checked={isCheckedrememberMe}
+                             />
+                             <label className="form-check-label" htmlFor="remember-me">Remember Me</label>
+                        
 
                         </div>
                         <div className ="mb-4 pb-2 text-end forgot-password w-50 float-start">
                             <Link to ="#" title="Forgot Password" className ="a-link">Forgot Password?</Link>
                         </div>
                         <div className ="col-12"> 
-                            <button type="submit" className ="default-btn w-100">Login</button>
+                            <button type="submit" className ="default-btn w-100" >Login</button>
                         </div>
                     </form>
                 </div>

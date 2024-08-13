@@ -70,7 +70,7 @@ function Signup(){
       }
     };
     console.log(errors,'errors')
-     
+      
       return(
       <section className="signin form-section">
           <div className="container-fluid">
