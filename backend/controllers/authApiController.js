@@ -19,7 +19,7 @@ async function login(req, res) {
     try {
 
         const { email, password } = req.body;
-        const user = await User.findOne({ email: email, role:2 , isDeleted: false });
+        const user = await User.findOne({ email: email, isDeleted: false });
         console.log(user,"user");
         if (!user) {
             return res.status(401).json({ status: false, error: 'Incorrect Email ID or Password !' });
@@ -29,12 +29,12 @@ async function login(req, res) {
             return res.status(401).json({status: false, error: 'Incorrect Email ID or Password !' });
         }
 
-        if (user.status === 2) {
-            return res.status(401).json({status: false, error: 'Your account is rejected by admin. !' });
-        }
-        if (!user.is_approve) {
-            return res.status(401).json({status: false, error: 'Your account is not approved by admin. !' });
-        }
+        // if (user.status === 2) {
+        //     return res.status(401).json({status: false, error: 'Your account is rejected by admin. !' });
+        // }
+        // if (!user.is_approve) {
+        //     return res.status(401).json({status: false, error: 'Your account is not approved by admin. !' });
+        // }
         
         if (user.expiry_date && user.expiry_date < new Date()) {
             return res.status(401).json({status: false, error: 'Sorry! Your account is expiry' });
