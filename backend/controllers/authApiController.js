@@ -36,9 +36,9 @@ async function login(req, res) {
         //     return res.status(401).json({status: false, error: 'Your account is not approved by admin. !' });
         // }
         
-        if (user.expiry_date && user.expiry_date < new Date()) {
-            return res.status(401).json({status: false, error: 'Sorry! Your account is expiry' });
-        }
+        // if (user.expiry_date && user.expiry_date < new Date()) {
+        //     return res.status(401).json({status: false, error: 'Sorry! Your account is expiry' });
+        // }
 
         const token = jwt.sign({ userId: user._id }, process.env.SESSION_SECRET, {
             expiresIn: '2h',
@@ -90,6 +90,8 @@ async function updateProfile(req, res) {
     try {
         const { userId, password } = req.body;
         const updateData = { ...req.body };
+        let baseUrl = process.env.APP_URL;
+        // console.log(req.file,"DDDDDDDDDDDDDDDDDDDDD")
         if (req.file != undefined) {
             let profileImage = updateData.profile_image;
             const filePath = "./assets/profileImage/" + profileImage;
@@ -103,7 +105,7 @@ async function updateProfile(req, res) {
                 }
               });
             }
-            updateData.profile_image = req.file.filename;
+            updateData.profile_image = `${req.file.filename}`;
           } else {
             delete updateData.profile_image;
           }
@@ -112,10 +114,9 @@ async function updateProfile(req, res) {
         } else {
             delete updateData.password;
         }
-
         // Update the user data
         const userData = await User.findByIdAndUpdate(userId, updateData, { new: true });
-
+        userData.profile_image = `${baseUrl}/ProfileImage/${req.file.filename}`;
         res.status(200).json({ status: true, userData });
     } catch (error) {
         console.log(error);

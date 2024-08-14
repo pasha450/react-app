@@ -1,4 +1,5 @@
 const express = require('express');
+const db = require('../config/mongoose');
 const router = express.Router();
 const db = require('../config/mongoose');
 

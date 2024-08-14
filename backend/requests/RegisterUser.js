@@ -23,6 +23,15 @@ var validateUser = () => [
     .bail()
     .isEmail()
     .withMessage("Input must be a valid email!")
+    .bail()
+    .custom((value, { req }) => {
+      const regex = new RegExp("^" + value + "$", "i"); // Case-insensitive matching
+      return User.find({ email: regex, isDeleted: false }).then((student) => {
+        if (student.length) {
+          return Promise.reject("Email is already in use!");
+        }
+      });
+    })
     .bail(),
 
     body('password')
@@ -73,6 +82,7 @@ var validateUser = () => [
     .bail(),
     (req, res, next) => {
         const errors = validationResult(req);
+        console.log(errors,'errors222')
         if (!errors.isEmpty())
           return res.status(422).json({ errors: errors.array() });
         next();

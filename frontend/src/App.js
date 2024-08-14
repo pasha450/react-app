@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Routes} from 'react-router-dom';
 import Users from './pages/Users';
 import Register from './pages/Register';
 import PrivateRoute from './pages/PrivateRoute';
-
+             
 export default function App() {
   return ( 
     <BrowserRouter>
