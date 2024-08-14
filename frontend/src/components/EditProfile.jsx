@@ -7,8 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { json } from 'react-router-dom';
 const apiUrl = process.env.REACT_APP_API_URL;
 
+
+
 function EditProfile(){
-        const[userData , setUserData] = useState({});
+        const[userData , setUserData] = useState({
+            name: '',
+            profile_image: null
+        });
         const[userId, setUserId] = useState('');
         const[header, setHeader] = useState({});
         const[selectedImage,setSelectedImage] = useState();
@@ -53,6 +58,10 @@ function EditProfile(){
      if (file)
      {
         setSelectedImage(file);
+        setUserData(prevState => ({
+            ...prevState,
+            profile_image: file
+        }));
     
       }
      };
@@ -73,23 +82,21 @@ function EditProfile(){
 
     //  use for upload image file 
     
-        const formData = new FormData()
-        formData.append('image',selectedImage);
-        console.log(formData,'checked it ');
         if(!selectedImage){
             setMessage('select an image to upload');
             return ;
         } 
-        if(selectedImage ){
-            userData.profile_image = selectedImage;
-        }
-        console.log(userData, 'usernameee')
+        const formData = new FormData()
+        formData.append('name', userData.name);
+        formData.append('profile_image', selectedImage);
+        console.log(formData,'nothing hereeee');
         try{
-    
+         
             console.log(userData,'userData')
-            await axios.post(`${apiUrl}/update-profile`,userData,{ headers: header});
-            console.log("form submitted !!");
-            console.log(userData,"updated value");
+            let result = await axios.post(`${apiUrl}/update-profile`,userData,{ headers: header ,'Content-Type': 'multipart/form-data',
+          ...header} );
+            console.log("form submitted !!",result);
+            // console.log(userData,"updated value");
             toast.success('Profile updated successfully!'); // Show success toast
             localStorage.setItem('storeData',JSON.stringify(userData));
         }
