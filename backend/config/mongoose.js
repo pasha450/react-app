@@ -1,26 +1,25 @@
 const mongoose = require('mongoose'); // mongoose required
-require('dotenv').config(); // Load environment variables
+const env = require('dotenv').config();
+const poolSize = 10; // Number of connections in the pool
 const database = process.env.DB_URL;
-console.log(database,"database");
+
 mongoose.connect(database, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 90000, // Timeout after 90s
-    poolSize: 10, // Number of connections in the pool
+    serverSelectionTimeoutMS: 90000, // Timeout after 90s instead of 30s
 });
+const db = mongoose.connection; //made connection to mongoose
 
-const db = mongoose.connection;
-
-db.on('error', (err) => {
+mongoose.connection.on('error', (err) => {
     if (err.code === 'ETIMEDOUT') {
-        console.error('Connection timed out!');
+      console.error('Connection timed out!');
     } else {
-        console.error('MongoDB connection error:', err);
+      console.error(err);
     }
-});
+  });
 
-db.once('open', () => {
-    console.log('Connected to database :: MongoDB');
+db.on('error',console.error.bind(console, "Error connection to mongodb"));
+db.once('open',function(){
+    //if connected successfully
+    console.log('connected to database :: MongoDB');
 });
 
 module.exports = db;

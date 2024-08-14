@@ -51,17 +51,19 @@ function UserList (){
                                 <tr>
                                     <th>#ID</th>
                                     <th>Name</th>
-                                    <th>Service Type</th>
+                                    <th>Email</th>
                                     <th>Status</th>
                                     <th colspan="2">Date & Time</th>
                                 </tr>
+                                <br></br>
                                 <tr>
                                     <td>#010</td>
                                     <td>Walter Robyn</td>
                                     <td>Home Cleaning</td>
                                     <td><span className="b-success">Confirmed</span></td>
                                     <td>16/07/2022</td>
-                                    <td><Link to className="b-link">View</Link></td>
+                                    {/* <td><Link to className="b-link">View</Link></td> */}
+                                    <button type="submit" class="btn btn-dark w-100 fw-bold">View</button>
                                 </tr>
                                 <tr>
                                     <td>#023</td>
@@ -69,7 +71,8 @@ function UserList (){
                                     <td>Home Cleaning</td>
                                     <td><span className="b-reject">Rejected</span></td>
                                     <td>13/06/2022</td>
-                                    <td><Link to className="b-link">View</Link></td>
+                                    {/* <td><Link to className="b-link">View</Link></td> */}
+                                    <button type="submit" class="btn btn-dark w-100 fw-bold">View</button>
                                 </tr>
                                 <tr>
                                     <td>#056</td>
@@ -77,7 +80,10 @@ function UserList (){
                                     <td>Home Cleaning</td>
                                     <td><span className="b-success">Confirmed</span></td>
                                     <td>06/06/2022</td>
-                                    <td><Link to className="b-link">View</Link></td>
+                                    {/* <button type="submit" className="default-btn w-80">View</button> */}
+                                    {/* <td><Link to className="b-link">View</Link></td> */}
+                                    <button type="submit" class="btn btn-dark w-100 fw-bold">View</button>
+
                                 </tr>
                                 <tr>
                                     <td>#023</td>
@@ -85,7 +91,8 @@ function UserList (){
                                     <td>Home Cleaning</td>
                                     <td><span className="b-success">Confirmed</span></td>
                                     <td>04/05/2022</td>
-                                    <td><Link to className="b-link">View</Link></td>
+                                    {/* <td><Link to className="b-link">View</Link></td> */}
+                                    <button type="submit" class="btn btn-dark w-100 fw-bold">View</button>
                                 </tr>
                             </table>
                         </div>
