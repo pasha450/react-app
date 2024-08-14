@@ -1083,4 +1083,7 @@ form .form-label{
     bottom: 28px;
 }
 
-
+.user-img img{
+    width: 25px;
+    height: 30px;
+}

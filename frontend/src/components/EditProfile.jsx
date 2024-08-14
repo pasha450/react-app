@@ -82,23 +82,33 @@ function EditProfile(){
 
     //  use for upload image file 
     
-        if(!selectedImage){
-            setMessage('select an image to upload');
-            return ;
-        } 
+        // if(!selectedImage){
+        //     setMessage('select an image to upload');
+        //     return ;
+        // } 
         const formData = new FormData()
         formData.append('name', userData.name);
+        formData.append('userId', userId);
         formData.append('profile_image', selectedImage);
-        console.log(formData,'nothing hereeee');
+        console.log(selectedImage,'nothing hereeee');
         try{
          
             console.log(userData,'userData')
-            let result = await axios.post(`${apiUrl}/update-profile`,userData,{ headers: header ,'Content-Type': 'multipart/form-data',
+            let result = await axios.post(`${apiUrl}/update-profile`,formData,{ headers: header ,'Content-Type': 'multipart/form-data',
           ...header} );
             console.log("form submitted !!",result);
             // console.log(userData,"updated value");
             toast.success('Profile updated successfully!'); // Show success toast
-            localStorage.setItem('storeData',JSON.stringify(userData));
+            const {name, profile_image, _id , gender , email} = result.data.userData;
+            const userObject = {
+                userId:_id,
+                name:name,
+                email:result.email,
+                gender:result.gender,
+                profile_image:profile_image,
+                gender:result.gender == undefined ? '': result.gender,
+            }
+            localStorage.setItem('storeData',JSON.stringify(userObject));
         }
         catch(error){
           console.log(error);
@@ -114,7 +124,7 @@ function EditProfile(){
                             <h4>Edit Profile</h4>
                         </div>
                         <div className="edit-profile pt-30">
-                            <form className="form w-100" method='post' onSubmit={handleSubmit} enctype="multipart/form-data"> 
+                            <form className="form w-100" method='post' onSubmit={handleSubmit} encType="multipart/form-data"> 
                                 <div className="input-group mb-3 mb-lg-4 pb-1"> 
                                     <label className="form-label w-100">Profile Picture</label>
                                     <div className="profile-img">

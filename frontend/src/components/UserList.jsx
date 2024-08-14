@@ -2,6 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function UserList (){
+    
+    const loggedUserData = localStorage.getItem("storeData");    
+    const userData = JSON.parse(loggedUserData); 
+
     return(
             <div className="Dright-content">
                 <div className="dash-main-filed">
